@@ -8,7 +8,6 @@ jobs:
       env: VERSIONS=--prefer-lowest
     - php: 7.3
     - php: 7.4
-      env: COLLECT_COVERAGE=true
 
 install:
   - travis_retry composer self-update

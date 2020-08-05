@@ -30,6 +30,7 @@
     </testsuites>
     <filter>
         <whitelist>
+            <directory suffix=".php">src</directory>
             <exclude>
                 <directory suffix=".php">PEAR_INSTALL_DIR</directory>
                 <directory suffix=".php">PHP_LIBDIR</directory>

@@ -1,44 +1,47 @@
 <?php
 
-namespace FineDiffTests\Parser;
+namespace FineDiff\Tests\Parser;
 
-use FineDiffTests\TestCase;
+use FineDiff\Exceptions\GranularityCountException;
+use FineDiff\Parser\OperationCodesInterface;
+use FineDiff\Granularity\Character;
+use FineDiff\Parser\Parser;
+use FineDiff\Parser\ParserInterface;
 use Mockery as m;
-use CogPowered\FineDiff\Granularity\Character;
-use CogPowered\FineDiff\Parser\Parser;
+use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Parser\ParserInterface
+     * @var ParserInterface
      */
     protected $parser;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $granularity  = new Character;
+        $granularity  = new Character();
         $this->parser = new Parser($granularity);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
 
     public function testInstanceOf()
     {
-        $this->assertInstanceOf('CogPowered\FineDiff\Parser\ParserInterface', $this->parser);
+        $this->assertInstanceOf(ParserInterface::class, $this->parser);
     }
 
     public function testDefaultOperationCodes()
     {
         $operation_codes = $this->parser->getOperationCodes();
-        $this->assertInstanceOf('CogPowered\FineDiff\Parser\OperationCodesInterface', $operation_codes);
+        $this->assertInstanceOf(OperationCodesInterface::class, $operation_codes);
     }
 
     public function testSetOperationCodes()
     {
-        $operation_codes = m::mock('CogPowered\FineDiff\Parser\OperationCodes');
+        $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('foo')->andReturn('bar');
         $this->parser->setOperationCodes($operation_codes);
 
@@ -46,26 +49,25 @@ class ParserTest extends TestCase
         $this->assertEquals($operation_codes->foo(), 'bar');
     }
 
-    /**
-     * @expectedException \CogPowered\FineDiff\Exceptions\GranularityCountException
-     */
     public function testParseBadGranularity()
     {
-        $granularity = m::mock('CogPowered\FineDiff\Granularity\Character');
+        $granularity = m::mock(Character::class);
         $granularity->shouldReceive('count')->andReturn(0);
         $parser = new Parser($granularity);
+
+        $this->expectException(GranularityCountException::class);
 
         $parser->parse('hello world', 'hello2 worl');
     }
 
     public function testParseSetOperationCodes()
     {
-        $operation_codes = m::mock('CogPowered\FineDiff\Parser\OperationCodes');
+        $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('setOperationCodes')->once();
         $this->parser->setOperationCodes($operation_codes);
 
         $this->parser->parse('Hello worlds', 'Hello2 world');
-        
+
         $this->assertTrue(true);
     }
 }

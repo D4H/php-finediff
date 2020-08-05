@@ -1,53 +1,55 @@
 <?php
 
-namespace FineDiffTests\Granularity;
+namespace FineDiff\Tests\Granularity;
 
-use FineDiffTests\TestCase;
-use CogPowered\FineDiff\Delimiters;
-use CogPowered\FineDiff\Granularity\Character;
+use ArrayAccess;
+use FineDiff\Delimiters;
+use FineDiff\Granularity\Character;
+use FineDiff\Granularity\GranularityInterface;
+use PHPUnit\Framework\TestCase;
 
 class CharacterTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Granularity\Granularity
+     * @var GranularityInterface
      */
-    protected $character;
-    
-    protected $delimiters = array(
+    protected $granularity;
+
+    /**
+     * @var array
+     */
+    protected $delimiters = [
         Delimiters::PARAGRAPH,
         Delimiters::SENTENCE,
         Delimiters::WORD,
         Delimiters::CHARACTER,
-    );
+    ];
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->character = new Character;
+        $this->granularity = new Character();
     }
 
     public function testExtendsAndImplements()
     {
-        $this->assertInstanceOf('CogPowered\FineDiff\Granularity\Granularity', $this->character);
-        $this->assertInstanceOf('CogPowered\FineDiff\Granularity\GranularityInterface', $this->character);
-        $this->assertInstanceOf('ArrayAccess', $this->character);
-        $this->assertInstanceOf('Countable', $this->character);
+        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
     }
 
     public function testGetDelimiters()
     {
-        $this->assertEquals($this->character->getDelimiters(), $this->delimiters);
+        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
     }
 
     public function testSetDelimiters()
     {
         $arr = array('one', 'two');
-        $this->character->setDelimiters($arr);
-        $this->assertEquals($this->character->getDelimiters(), $arr);
+        $this->granularity->setDelimiters($arr);
+        $this->assertEquals($this->granularity->getDelimiters(), $arr);
     }
 
     public function testCountable()
     {
-        $this->assertCount(count($this->character), $this->delimiters);
+        $this->assertCount(count($this->granularity), $this->delimiters);
     }
 
     public function testArrayAccess()
@@ -56,9 +58,9 @@ class CharacterTest extends TestCase
         for ($i = 0; $i < count($this->delimiters) + 1; $i++) {
 
             if ($i !== count($this->delimiters)) {
-                $this->assertTrue(isset($this->character[$i]));
+                $this->assertTrue(isset($this->granularity[$i]));
             } else {
-                $this->assertFalse(isset($this->character[$i]));
+                $this->assertFalse(isset($this->granularity[$i]));
             }
         }
 
@@ -66,9 +68,9 @@ class CharacterTest extends TestCase
         for ($i = 0; $i < count($this->delimiters) + 1; $i++) {
 
             if ($i !== count($this->delimiters)) {
-                $this->assertEquals($this->character[$i], $this->delimiters[$i]);
+                $this->assertEquals($this->granularity[$i], $this->delimiters[$i]);
             } else {
-                $this->assertNull($this->character[$i]);
+                $this->assertNull($this->granularity[$i]);
             }
         }
 
@@ -77,14 +79,14 @@ class CharacterTest extends TestCase
 
             $rand = mt_rand(0, 1000);
 
-            $this->character[$i] = $rand;
-            $this->assertEquals($this->character[$i], $rand);
+            $this->granularity[$i] = $rand;
+            $this->assertEquals($this->granularity[$i], $rand);
         }
 
-        $this->assertEquals(count($this->character), count($this->delimiters) + 1);
+        $this->assertEquals(count($this->granularity), count($this->delimiters) + 1);
 
         // Unset
-        unset($this->character[ count($this->delimiters) ]);
-        $this->assertCount(count($this->character), $this->delimiters);
+        unset($this->granularity[ count($this->delimiters) ]);
+        $this->assertCount(count($this->granularity), $this->delimiters);
     }
 }

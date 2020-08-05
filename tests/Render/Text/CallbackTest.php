@@ -1,20 +1,21 @@
 <?php
 
-namespace FineDiffTests\Render\Text;
+namespace FineDiff\Tests\Render\Text;
 
-use FineDiffTests\TestCase;
-use CogPowered\FineDiff\Render\Text;
+use FineDiff\Render\RendererInterface;
+use FineDiff\Render\Text;
+use PHPUnit\Framework\TestCase;
 
 class CallbackTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Render\RendererInterface
+     * @var RendererInterface
      */
     protected $text;
-    
-    public function setUp()
+
+    public function setUp(): void
     {
-        $this->text = new Text;
+        $this->text = new Text();
     }
 
     public function testCopy()

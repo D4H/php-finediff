@@ -1,0 +1,438 @@
+<?php
+
+namespace FineDiff\Parser;
+
+use FineDiff\Exceptions\GranularityCountException;
+use FineDiff\Granularity\GranularityInterface;
+use FineDiff\Parser\Operations\Copy;
+use FineDiff\Parser\Operations\Delete;
+use FineDiff\Parser\Operations\Insert;
+use FineDiff\Parser\Operations\OperationInterface;
+use FineDiff\Parser\Operations\Replace;
+
+class Parser implements ParserInterface
+{
+    /**
+     * @var GranularityInterface
+     */
+    protected $granularity;
+
+    /**
+     * @var OperationCodesInterface
+     */
+    protected $operationCodes;
+
+    /**
+     * @var string Text we are comparing against.
+     */
+    protected $formText;
+
+    /**
+     * @var int Position of the $from_text we are at.
+     */
+    protected $fromOffset = 0;
+
+    /**
+     * @var OperationInterface
+     */
+    protected $lastEdit;
+
+    /**
+     * @var int Current position in the granularity array.
+     */
+    protected $stackPointer = 0;
+
+    /**
+     * @var array Holds the individual operation codes as the diff takes place.
+     */
+    protected $edits = [];
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(GranularityInterface $granularity)
+    {
+        $this->granularity = $granularity;
+
+        // Set default operation codes generator
+        $this->operationCodes = new OperationCodes();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGranularity(): GranularityInterface
+    {
+        return $this->granularity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setGranularity(GranularityInterface $granularity)
+    {
+        $this->granularity = $granularity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOperationCodes(): OperationCodesInterface
+    {
+        return $this->operationCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setOperationCodes(OperationCodesInterface $operationCodes)
+    {
+        $this->operationCodes = $operationCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parse($fromText, $toText): OperationCodesInterface
+    {
+        // Ensure the granularity contains some delimiters
+        if (count($this->granularity) === 0) {
+            throw new GranularityCountException('Granularity contains no delimiters');
+        }
+
+        // Reset internal parser properties
+        $this->formText = $fromText;
+        $this->fromOffset = 0;
+        $this->lastEdit = null;
+        $this->stackPointer = 0;
+        $this->edits = [];
+
+        // Parse the two string
+        $this->process($fromText, $toText);
+
+        // Return processed diff
+        $this->operationCodes->setOperationCodes($this->edits);
+
+        return $this->operationCodes;
+    }
+
+    /**
+     * Actually kicks off the processing. Recursive function.
+     *
+     * @param string $fromText
+     * @param string $toText
+     */
+    protected function process($fromText, $toText)
+    {
+        // Lets get parsing
+        $delimiters = $this->granularity[$this->stackPointer++];
+        $hasNextStage = $this->stackPointer < count($this->granularity);
+
+        // Actually perform diff
+        $diff = $this->diff($fromText, $toText, $delimiters);
+        $diff = is_array($diff) ? $diff : [];
+
+        foreach ($diff as $fragment) {
+            // increase granularity
+            if ($fragment instanceof Replace && $hasNextStage) {
+                $this->process(
+                    substr($this->formText, $this->fromOffset, $fragment->getFromLen()),
+                    $fragment->getText()
+                );
+            } elseif ($fragment instanceof Copy && $this->lastEdit instanceof Copy) {
+                // fuse copy ops whenever possible
+                $this->edits[count($this->edits)-1]->increase($fragment->getFromLen());
+                $this->fromOffset += $fragment->getFromLen();
+            } else {
+                $this->edits[] = $this->lastEdit = $fragment;
+                $this->fromOffset += $fragment->getFromLen();
+            }
+        }
+
+        $this->stackPointer--;
+    }
+
+    /**
+     * Core parsing function.
+     *
+     * @param string $fromText
+     * @param string $toText
+     * @param string $delimiters Delimiter to use for this parse.
+     *
+     * @return OperationInterface[]
+     */
+    protected function diff($fromText, $toText, $delimiters): array
+    {
+        // Empty delimiter means character-level diffing.
+        // In such case, use code path optimized for character-level diffing.
+        if (empty($delimiters)) {
+            return $this->charDiff($fromText, $toText);
+        }
+
+        $result = [];
+
+        // fragment-level diffing
+        $fromTextLen = strlen($fromText);
+        $toTextLen = strlen($toText);
+        $fromFragments = $this->extractFragments($fromText, $delimiters);
+        $toFragments = $this->extractFragments($toText, $delimiters);
+
+        $jobs = [[0, $fromTextLen, 0, $toTextLen]];
+        $cachedArrayKeys = [];
+
+        while ($job = array_pop($jobs)) {
+            // get the segments which must be diff'ed
+            list($fromSegmentStart, $fromSegmentEnt, $toSegmentStart, $toSegmentEnd) = $job;
+
+            // catch easy cases first
+            $fromSegmentLength = $fromSegmentEnt - $fromSegmentStart;
+            $toSegmentLength = $toSegmentEnd - $toSegmentStart;
+
+            if (!$fromSegmentLength || !$toSegmentLength) {
+                if ($fromSegmentLength) {
+                    $result[$fromSegmentStart * 4] = new Delete($fromSegmentLength);
+                } else if ($toSegmentLength) {
+                    $result[$fromSegmentStart * 4 + 1] = new Insert(substr($toText, $toSegmentStart, $toSegmentLength));
+                }
+
+                continue;
+            }
+
+            // find longest copy operation for the current segments
+            $bestCopyLength = 0;
+
+            $fromBaseFragmentIndex = $fromSegmentStart;
+            $cachedArrayKeysForCurrentSegment = [];
+
+            while ($fromBaseFragmentIndex < $fromSegmentEnt) {
+                $fromBaseFragment = $fromFragments[$fromBaseFragmentIndex];
+                $fromBaseFragmentLength = strlen($fromBaseFragment);
+
+                // performance boost: cache array keys
+                if (!isset($cachedArrayKeysForCurrentSegment[$fromBaseFragment])) {
+                    if (!isset($cachedArrayKeys[$fromBaseFragment])) {
+                        $toAllFragmentIndices = $cachedArrayKeys[$fromBaseFragment] = array_keys($toFragments, $fromBaseFragment, true);
+                    }
+                    else {
+                        $toAllFragmentIndices = $cachedArrayKeys[$fromBaseFragment];
+                    }
+
+                    // get only indices which falls within current segment
+                    if ($toSegmentStart > 0 || $toSegmentEnd < $toTextLen) {
+                        $toFragmentIndices = [];
+
+                        foreach ($toAllFragmentIndices as $toFragmentIndex) {
+                            if ($toFragmentIndex < $toSegmentStart) {
+                                continue;
+                            }
+
+                            if ($toFragmentIndex >= $toSegmentEnd) {
+                                break;
+                            }
+
+                            $toFragmentIndices[] = $toFragmentIndex;
+                        }
+
+                        $cachedArrayKeysForCurrentSegment[$fromBaseFragment] = $toFragmentIndices;
+                    } else {
+                        $toFragmentIndices = $toAllFragmentIndices;
+                    }
+                } else {
+                    $toFragmentIndices = $cachedArrayKeysForCurrentSegment[$fromBaseFragment];
+                }
+
+                // iterate through collected indices
+                foreach ($toFragmentIndices as $toBaseFragmentIndex) {
+                    $fragmentIndexOffset = $fromBaseFragmentLength;
+
+                    // iterate until no more match
+                    while (true) {
+                        $fragmentFromIndex = $fromBaseFragmentIndex + $fragmentIndexOffset;
+
+                        if ($fragmentFromIndex >= $fromSegmentEnt) {
+                            break;
+                        }
+
+                        $fragmentToIndex = $toBaseFragmentIndex + $fragmentIndexOffset;
+
+                        if ($fragmentToIndex >= $toSegmentEnd) {
+                            break;
+                        }
+
+                        if ($fromFragments[$fragmentFromIndex] !== $toFragments[$fragmentToIndex]) {
+                            break;
+                        }
+
+                        $fragmentLength = strlen($fromFragments[$fragmentFromIndex]);
+                        $fragmentIndexOffset += $fragmentLength;
+                    }
+
+                    if ($fragmentIndexOffset > $bestCopyLength) {
+                        $bestCopyLength = $fragmentIndexOffset;
+                        $bestFromStart = $fromBaseFragmentIndex;
+                        $bestToStart = $toBaseFragmentIndex;
+                    }
+                }
+
+                $fromBaseFragmentIndex += strlen($fromBaseFragment);
+
+                // If match is larger than half segment size, no point trying to find better
+                // TODO: Really?
+                if ($bestCopyLength >= $fromSegmentLength / 2) {
+                    break;
+                }
+
+                // No point to keep looking if what is left is less than current best match
+                if ($fromBaseFragmentIndex + $bestCopyLength >= $fromSegmentEnt) {
+                    break;
+                }
+            }
+
+            if ($bestCopyLength) {
+                $jobs[] = [$fromSegmentStart, $bestFromStart, $toSegmentStart, $bestToStart];
+                $result[$bestFromStart * 4 + 2] = new Copy($bestCopyLength);
+                $jobs[] = [$bestFromStart + $bestCopyLength, $fromSegmentEnt, $bestToStart + $bestCopyLength, $toSegmentEnd];
+            } else {
+                $result[$fromSegmentStart * 4 ] = new Replace($fromSegmentLength, substr($toText, $toSegmentStart, $toSegmentLength));
+            }
+        }
+
+        ksort($result, SORT_NUMERIC);
+
+        return array_values($result);
+    }
+
+    /**
+     * Same as Parser::diff but tuned for character level granularity.
+     *
+     * @param string $fromText
+     * @param string $toText
+     *
+     * @return OperationInterface[]
+     */
+    protected function charDiff($fromText, $toText): array
+    {
+        $result = [];
+        $jobs = [[0, strlen($fromText), 0, strlen($toText)]];
+
+        while ($job = array_pop($jobs)) {
+            // get the segments which must be diff'ed
+            list($fromSegmentStart, $fromSegmentEnd, $toSegmentStart, $toSegmentEnd) = $job;
+
+            $fromSegmentLen = $fromSegmentEnd - $fromSegmentStart;
+            $toSegmentLen = $toSegmentEnd - $toSegmentStart;
+
+            // catch easy cases first
+            if (!$fromSegmentLen || !$toSegmentLen) {
+                if ($fromSegmentLen) {
+                    $result[$fromSegmentStart * 4 + 0] = new Delete($fromSegmentLen);
+                } else if ($toSegmentLen) {
+                    $result[$fromSegmentStart * 4 + 1] = new Insert(substr($toText, $toSegmentStart, $toSegmentLen));
+                }
+
+                continue;
+            }
+
+            if ($fromSegmentLen >= $toSegmentLen) {
+                $copyLen = $toSegmentLen;
+
+                while ($copyLen) {
+                    $toCopyStart = $toSegmentStart;
+                    $toCopyStartMax = $toSegmentEnd - $copyLen;
+
+                    while ($toCopyStart <= $toCopyStartMax) {
+                        $fromCopyStart = strpos(substr($fromText, $fromSegmentStart, $fromSegmentLen), substr($toText, $toCopyStart, $copyLen));
+
+                        if ($fromCopyStart !== false) {
+                            $fromCopyStart += $fromSegmentStart;
+                            break 2;
+                        }
+
+                        $toCopyStart++;
+                    }
+
+                    $copyLen--;
+                }
+            } else {
+                $copyLen = $fromSegmentLen;
+
+                while ($copyLen) {
+                    $fromCopyStart = $fromSegmentStart;
+                    $fromCopyStartMax = $fromSegmentEnd - $copyLen;
+
+                    while ($fromCopyStart <= $fromCopyStartMax) {
+                        $toCopyStart = strpos(substr($toText, $toSegmentStart, $toSegmentLen), substr($fromText, $fromCopyStart, $copyLen));
+
+                        if ($toCopyStart !== false) {
+                            $toCopyStart += $toSegmentStart;
+                            break 2;
+                        }
+
+                        $fromCopyStart++;
+                    }
+
+                    $copyLen--;
+                }
+            }
+
+            // match found
+            if ($copyLen) {
+                $jobs[] = [$fromSegmentStart, $fromCopyStart, $toSegmentStart, $toCopyStart];
+                $result[$fromCopyStart * 4 + 2] = new Copy($copyLen);
+                $jobs[] = [$fromCopyStart + $copyLen, $fromSegmentEnd, $toCopyStart + $copyLen, $toSegmentEnd];
+            }
+            // no match,  so delete all, insert all
+            else {
+                $result[$fromSegmentStart * 4] = new Replace($fromSegmentLen, substr($toText, $toSegmentStart, $toSegmentLen));
+            }
+        }
+
+        ksort($result, SORT_NUMERIC);
+
+        return array_values($result);
+    }
+
+    /**
+     * Efficiently fragment the text into an array according to specified delimiters.
+     *
+     * No delimiters means fragment into single character. The array indices are the offset of the fragments into
+     * the input string. A sentinel empty fragment is always added at the end.
+     * Careful: No check is performed as to the validity of the delimiters.
+     *
+     * @param string $text
+     * @param string $delimiters
+     * @param array
+     *
+     * @return string[]
+     */
+    protected function extractFragments($text, $delimiters): array
+    {
+        // special case: split into characters
+        if (empty($delimiters)) {
+            $chars = str_split($text);
+            $chars[strlen($text)] = '';
+
+            return $chars;
+        }
+
+        $fragments = [];
+        $start = 0;
+        $end = 0;
+
+        while (true) {
+            $end += strcspn($text, $delimiters, $end);
+            $end += strspn($text, $delimiters, $end);
+
+            if ($end === $start) {
+                break;
+            }
+
+            $fragments[$start] = substr($text, $start, $end - $start);
+            $start = $end;
+        }
+
+        $fragments[$start] = '';
+
+        return $fragments;
+    }
+}

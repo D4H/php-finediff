@@ -1,106 +1,97 @@
 <?php
 
-namespace FineDiffTests\Usage;
+namespace FineDiff\Tests\Usage;
 
-use CogPowered\FineDiff\Diff;
-use CogPowered\FineDiff\Render\Text;
-use CogPowered\FineDiff\Render\Html;
-use CogPowered\FineDiff\Granularity\Character;
-use CogPowered\FineDiff\Granularity\Word;
-use CogPowered\FineDiff\Granularity\Sentence;
-use CogPowered\FineDiff\Granularity\Paragraph;
+use FineDiff\Diff;
+use FineDiff\Exceptions\GranularityCountException;
+use FineDiff\Granularity\GranularityInterface;
+use FineDiff\Render\Text;
+use FineDiff\Render\Html;
+use FineDiff\Granularity\Character;
+use FineDiff\Granularity\Word;
+use FineDiff\Granularity\Sentence;
+use FineDiff\Granularity\Paragraph;
+use PHPUnit\Framework\TestCase;
 
-class SimpleTest extends Base
+class SimpleTest extends TestCase
 {
-    public function testInsertCharacterGranularity()
-    {
-        list($from, $to, $operation_codes, $html) = $this->getFile('character/simple');
-
-        $diff = new Diff(new Character);
-        $generated_operation_codes = $diff->getOperationCodes($from, $to);
-
+    /**
+     * @dataProvider dataProvider
+     *
+     * @param GranularityInterface $granularity
+     * @param string $from
+     * @param string $to
+     * @param string $operationCodes
+     * @param string $html
+     *
+     * @throws GranularityCountException
+     */
+    public function testInsertGranularity(
+        GranularityInterface $granularity,
+        string $from,
+        string $to,
+        string $operationCodes,
+        string $html
+    ) {
+        // Arrange
+        $diff = new Diff($granularity);
+        $generatedOperationCodes = $diff->getOperationCodes($from, $to);
 
         // Generate operation codes
-        $this->assertEquals($generated_operation_codes, $operation_codes);
+        $this->assertEquals($operationCodes, $generatedOperationCodes);
 
         // Render to text from operation codes
-        $render = new Text;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $to );
+        $render = new Text();
+        $this->assertEquals($to, $render->process($from, $generatedOperationCodes));
 
         // Render to html from operation codes
-        $render = new Html;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $html );
+        $render = new Html();
+        $this->assertEquals($html, $render->process($from, $generatedOperationCodes));
 
         // Render
-        $this->assertEquals( $diff->render($from, $to), $html );
+        $this->assertEquals($html, $diff->render($from, $to));
     }
 
-    public function testInsertWordGranularity()
+    /**
+     * @return array
+     */
+    public function dataProvider(): array
     {
-        list($from, $to, $operation_codes, $html) = $this->getFile('word/simple');
-
-        $diff = new Diff(new Word);
-        $generated_operation_codes = $diff->getOperationCodes($from, $to);
-
-
-        // Generate operation codes
-        $this->assertEquals($generated_operation_codes, $operation_codes);
-
-        // Render to text from operation codes
-        $render = new Text;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $to );
-
-        // Render to html from operation codes
-        $render = new Html;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $html );
-
-        // Render
-        $this->assertEquals( $diff->render($from, $to), $html );
+        return [
+            'Character' => array_merge(
+                [new Character()],
+                $this->getFile('character/simple')
+            ),
+            'Paragraph' => array_merge(
+                [new Paragraph()],
+                $this->getFile('paragraph/simple')
+            ),
+            'Sentence' => array_merge(
+                [new Sentence()],
+                $this->getFile('sentence/simple')
+            ),
+            'Word' => array_merge(
+                [new Word()],
+                $this->getFile('word/simple')
+            ),
+        ];
     }
 
-    public function testInsertSentenceGranularity()
+    /**
+     * @param string $file
+     *
+     * @return array
+     */
+    private function getFile(string $file): array
     {
-        list($from, $to, $operation_codes, $html) = $this->getFile('sentence/simple');
+        $txt = file_get_contents(__DIR__.'/Resources/'.$file.'.txt');
+        $txt = explode('==========', $txt);
 
-        $diff = new Diff(new Sentence);
-        $generated_operation_codes = $diff->getOperationCodes($from, $to);
+        $from = trim($txt[0]);
+        $to = trim($txt[1]);
+        $operation_codes = trim($txt[2]);
+        $html = trim($txt[3]);
 
-
-        // Generate operation codes
-        $this->assertEquals($generated_operation_codes, $operation_codes);
-
-        // Render to text from operation codes
-        $render = new Text;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $to );
-
-        // Render to html from operation codes
-        $render = new Html;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $html );
-
-        // Render
-        $this->assertEquals( $diff->render($from, $to), $html );
-    }
-
-    public function testInsertParagraphGranularity()
-    {
-        list($from, $to, $operation_codes, $html) = $this->getFile('paragraph/simple');
-
-        $diff = new Diff(new Paragraph);
-        $generated_operation_codes = $diff->getOperationCodes($from, $to);
-
-
-        // Generate operation codes
-        $this->assertEquals($generated_operation_codes, $operation_codes);
-
-        // Render to text from operation codes
-        $render = new Text;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $to );
-
-        // Render to html from operation codes
-        $render = new Html;
-        $this->assertEquals( $render->process($from, $generated_operation_codes), $html );
-
-        // Render
-        $this->assertEquals( $diff->render($from, $to), $html );
+        return [$from, $to, $operation_codes, $html];
     }
 }

@@ -1,16 +1,18 @@
 <?php
 
-namespace FineDiffTests\Delimiters;
+namespace FineDiff\Tests\Delimiters;
 
-use FineDiffTests\TestCase;
+use FineDiff\Delimiters;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
 
 class EnumTest extends TestCase
 {
     public function testCantInstantiate()
     {
-        $class   = new ReflectionClass('CogPowered\FineDiff\Delimiters');
-        $methods = $class->getMethods(\ReflectionMethod::IS_PRIVATE);
+        $class = new ReflectionClass(Delimiters::class);
+        $methods = $class->getMethods(ReflectionMethod::IS_PRIVATE);
 
         $this->assertTrue(count($methods) >= 1);
 

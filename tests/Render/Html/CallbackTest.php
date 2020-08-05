@@ -1,20 +1,21 @@
 <?php
 
-namespace FineDiffTests\Render\Html;
+namespace FineDiff\Tests\Render\Html;
 
-use FineDiffTests\TestCase;
-use CogPowered\FineDiff\Render\Html;
+use FineDiff\Render\Html;
+use FineDiff\Render\RendererInterface;
+use PHPUnit\Framework\TestCase;
 
 class CallbackTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Render\RendererInterface
+     * @var RendererInterface
      */
     protected $html;
-    
-    public function setUp()
+
+    public function setUp(): void
     {
-        $this->html = new Html;
+        $this->html = new Html();
     }
 
     public function testCopy()

@@ -1,38 +1,39 @@
 <?php
 
-namespace FineDiffTests\Granularity;
+namespace FineDiff\Tests\Granularity;
 
-use FineDiffTests\TestCase;
-use CogPowered\FineDiff\Delimiters;
-use CogPowered\FineDiff\Granularity\Sentence;
+use FineDiff\Delimiters;
+use FineDiff\Granularity\GranularityInterface;
+use FineDiff\Granularity\Sentence;
+use PHPUnit\Framework\TestCase;
 
 class SentenceTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Granularity\Granularity
+     * @var GranularityInterface
      */
-    protected $character;
+    protected $granularity;
 
-    protected $delimiters = array(
+    /**
+     * @var array
+     */
+    protected $delimiters = [
         Delimiters::PARAGRAPH,
         Delimiters::SENTENCE,
-    );
+    ];
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->character = new Sentence;
+        $this->granularity = new Sentence();
     }
 
     public function testExtendsAndImplements()
     {
-        $this->assertInstanceOf('CogPowered\FineDiff\Granularity\Granularity', $this->character);
-        $this->assertInstanceOf('CogPowered\FineDiff\Granularity\GranularityInterface', $this->character);
-        $this->assertInstanceOf('ArrayAccess', $this->character);
-        $this->assertInstanceOf('Countable', $this->character);
+        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
     }
 
     public function testGetDelimiters()
     {
-        $this->assertEquals($this->character->getDelimiters(), $this->delimiters);
+        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
     }
 }

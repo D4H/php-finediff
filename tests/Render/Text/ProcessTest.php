@@ -1,33 +1,35 @@
 <?php
 
-namespace FineDiffTests\Render\Text;
+namespace FineDiff\Tests\Render\Text;
 
-use FineDiffTests\TestCase;
+use FineDiff\Parser\OperationCodesInterface;
+use FineDiff\Render\RendererInterface;
+use FineDiff\Render\Text;
+use InvalidArgumentException;
 use Mockery as m;
-use CogPowered\FineDiff\Render\Text;
+use PHPUnit\Framework\TestCase;
 
 class ProcessTest extends TestCase
 {
     /**
-     * @var \CogPowered\FineDiff\Render\RendererInterface
+     * @var RendererInterface
      */
     protected $text;
-    
-    public function setUp()
+
+    public function setUp(): void
     {
-        $this->text = new Text;
+        $this->text = new Text();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidOperationCode()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $this->text->process('Hello worlds', 123);
     }
 
@@ -40,7 +42,7 @@ class ProcessTest extends TestCase
 
     public function testProcess()
     {
-        $operation_codes = m::mock('CogPowered\FineDiff\Parser\OperationCodes');
+        $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('generate')->andReturn('c5i:2c6d')->once();
 
         $html = $this->text->process('Hello worlds', $operation_codes);

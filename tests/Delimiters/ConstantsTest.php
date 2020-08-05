@@ -1,10 +1,11 @@
 <?php
 
-namespace FineDiffTests\Delimiters;
+namespace FineDiff\Tests\Delimiters;
 
-use CogPowered\FineDiff\Parser\Operations\Operation;
-use CogPowered\FineDiff\Delimiters;
-use FineDiffTests\TestCase;
+use FineDiff\Parser\Operations\Operation;
+use FineDiff\Delimiters;
+use FineDiff\Parser\Operations\OperationInterface;
+use PHPUnit\Framework\TestCase;
 
 class ConstantsTest extends TestCase
 {
@@ -30,16 +31,16 @@ class ConstantsTest extends TestCase
 
     public function testCopyConstant()
     {
-        $this->assertEquals(Operation::COPY, 'c');
+        $this->assertEquals(OperationInterface::COPY, 'c');
     }
 
     public function testDeleteConstant()
     {
-        $this->assertEquals(Operation::DELETE, 'd');
+        $this->assertEquals(OperationInterface::DELETE, 'd');
     }
 
     public function testInsertConstant()
     {
-        $this->assertEquals(Operation::INSERT, 'i');
+        $this->assertEquals(OperationInterface::INSERT, 'i');
     }
 }

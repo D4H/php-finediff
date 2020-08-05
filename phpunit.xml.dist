@@ -6,8 +6,8 @@
     stopOnError="false"
     stopOnFailure="false"
     stopOnIncomplete="false"
-    bootstrap="vendor/autoload.php">
-
+    bootstrap="vendor/autoload.php"
+>
     <testsuites>
         <testsuite name="Delimiters">
             <directory suffix=".php">tests/Delimiters</directory>
@@ -29,10 +29,12 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory suffix=".php">PEAR_INSTALL_DIR</directory>
-            <directory suffix=".php">PHP_LIBDIR</directory>
-            <directory suffix=".php">vendor</directory>
-        </blacklist>
+        <whitelist>
+            <exclude>
+                <directory suffix=".php">PEAR_INSTALL_DIR</directory>
+                <directory suffix=".php">PHP_LIBDIR</directory>
+                <directory suffix=".php">vendor</directory>
+            </exclude>
+        </whitelist>
     </filter>
 </phpunit>

@@ -1,16 +1,17 @@
 <?php
 
-namespace FineDiffTests\Parser\Operations;
+namespace FineDiff\Tests\Parser\Operations;
 
-use FineDiffTests\TestCase;
-use CogPowered\FineDiff\Parser\Operations\Replace;
+use FineDiff\Parser\Operations\OperationInterface;
+use FineDiff\Parser\Operations\Replace;
+use PHPUnit\Framework\TestCase;
 
 class ReplaceTest extends TestCase
 {
     public function testImplementsOperationInterface()
     {
         $replace = new Replace('hello', 'world');
-        $this->assertInstanceOf('CogPowered\FineDiff\Parser\Operations\OperationInterface', $replace);
+        $this->assertInstanceOf(OperationInterface::class, $replace);
     }
 
     public function testGetFromLen()

@@ -1,5 +1,5 @@
 {
-    "name": "dh4/finediff",
+    "name": "d4h/finediff",
     "description": "PHP implementation of a Fine granularity Diff engine",
     "license": "MIT",
     "keywords": ["finediff", "diff", "text", "string", "opcode"],

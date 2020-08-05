@@ -2,23 +2,20 @@ FineDiff
 ========
 
 Originally written by Raymond Hill ([https://github.com/gorhill/PHP-FineDiff](https://github.com/gorhill/PHP-FineDiff))
-[![Build Status](https://travis-ci.org/cogpowered/FineDiff.png?branch=master)](https://travis-ci.org/cogpowered/FineDiff)
 
-Installation
-------------
+[![Build Status](https://img.shields.io/travis/d4h/php-finediff.svg?style=flat-square)](https://travis-ci.org/d4h/php-finediff)
+[![Latest Stable Version](https://img.shields.io/packagist/v/d4h/finediff.svg?style=flat-square)](https://packagist.org/packages/d4h/finediff)
+[![License](https://img.shields.io/github/license/d4h/php-finediff?style=flat-square)](#license)
 
-**Composer**
-
-The preferred way of using FineDiff is through [Composer](http://getcomposer.org).
+## Installation
 
 ```shell script
 composer require d4h/finediff
 ```
 
-Usage
------
+## Usage
 
-**Render HTML**
+### Render HTML
 
 Render the difference between two strings as HTML:
 
@@ -49,7 +46,7 @@ string <del>one</del><ins>two</ins>
 
 You do this by passing it into the Diff constructor:
 
-**Grab opcode instructions**
+### Grab opcode instructions
 
 Opcode instructions are what tell FineDiff how to change one string into another.
 
@@ -80,3 +77,7 @@ Same with HTML:
 $renderer = new FineDiff\Render\Html();
 echo $renderer->process('string one', 'c7d3i3:two');
 ```
+
+## Credits
+
+Sponsored by [D4H](https://d4htechnologies.com/).

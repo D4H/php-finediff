@@ -20,22 +20,20 @@ abstract class Renderer implements RendererInterface
 
         $operationCodes = ($operationCodes instanceof OperationCodesInterface) ? $operationCodes->generate() : $operationCodes;
 
-
         // Holds the generated string that is returned
         $output = '';
 
-        $operation_codes_len    = strlen($operationCodes);
-        $from_offset    = 0;
-        $operation_codes_offset = 0;
+        $operationCodesLen = mb_strlen($operationCodes);
+        $fromOffset = 0;
+        $operationCodesOffset = 0;
 
-        while ($operation_codes_offset < $operation_codes_len) {
-
-            $opcode = $operationCodes[$operation_codes_offset];
-            $operation_codes_offset++;
-            $n = (int)substr($operationCodes, $operation_codes_offset);
+        while ($operationCodesOffset < $operationCodesLen) {
+            $opcode = $operationCodes[$operationCodesOffset];
+            $operationCodesOffset++;
+            $n = (int) mb_substr($operationCodes, $operationCodesOffset);
 
             if ($n) {
-                $operation_codes_offset += strlen((string)$n);
+                $operationCodesOffset += mb_strlen((string)$n);
             } else {
                 $n = 1;
             }
@@ -43,12 +41,12 @@ abstract class Renderer implements RendererInterface
             switch ($opcode) {
                 case OperationInterface::COPY:
                 case OperationInterface::DELETE:
-                    $data = $this->callback($opcode, $fromText, $from_offset, $n);
-                    $from_offset += $n;
+                    $data = $this->callback($opcode, $fromText, $fromOffset, $n);
+                    $fromOffset += $n;
                     break;
                 case OperationInterface::INSERT:
-                    $data = $this->callback($opcode, $operationCodes, $operation_codes_offset + 1, $n);
-                    $operation_codes_offset += 1 + $n;
+                    $data = $this->callback($opcode, $operationCodes, $operationCodesOffset + 1, $n);
+                    $operationCodesOffset += 1 + $n;
                     break;
                 default:
                     $data = '';

@@ -13,7 +13,7 @@ class Text extends Renderer
     public function callback($opcode, $from, $offset, $length): string
     {
         if ($opcode === OperationInterface::COPY || $opcode === OperationInterface::INSERT) {
-            return substr($from, $offset, $length);
+            return mb_substr($from, $offset, $length);
         }
 
         return '';

@@ -56,7 +56,7 @@ class Html extends Renderer
      */
     protected function onCopy($from, $offset, $length): string
     {
-        return $this->htmlentities(substr($from, $offset, $length));
+        return $this->htmlentities(mb_substr($from, $offset, $length));
     }
 
     /**
@@ -82,7 +82,7 @@ class Html extends Renderer
      */
     protected function onDelete($from, $offset, $length): string
     {
-        $deletion = substr($from, $offset, $length);
+        $deletion = mb_substr($from, $offset, $length);
 
         return $this->wrap($this->htmlentities($deletion), 'del_prefix', 'del_suffix');
     }
@@ -108,7 +108,7 @@ class Html extends Renderer
      */
     protected function onInsert($from, $offset, $length): string
     {
-        $insertion = substr($from, $offset, $length);
+        $insertion = mb_substr($from, $offset, $length);
 
         return $this->wrap($this->htmlentities($insertion), 'ins_prefix', 'ins_suffix');
     }

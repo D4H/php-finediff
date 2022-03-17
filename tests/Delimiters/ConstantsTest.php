@@ -9,38 +9,38 @@ use PHPUnit\Framework\TestCase;
 
 class ConstantsTest extends TestCase
 {
-    public function testParagraphConstant()
+    public function testParagraphConstant(): void
     {
-        $this->assertEquals(Delimiters::PARAGRAPH, "\n\r");
+	    self::assertEquals(Delimiters::PARAGRAPH, "\n\r");
     }
 
-    public function testSentenceConstant()
+    public function testSentenceConstant(): void
     {
-        $this->assertEquals(Delimiters::SENTENCE, ".\n\r");
+	    self::assertEquals(Delimiters::SENTENCE, ".\n\r");
     }
 
-    public function testWordConstant()
+    public function testWordConstant(): void
     {
-        $this->assertEquals(Delimiters::WORD, " \t.\n\r");
+	    self::assertEquals(Delimiters::WORD, " \t.\n\r");
     }
 
-    public function testCharacterConstant()
+    public function testCharacterConstant(): void
     {
-        $this->assertEquals(Delimiters::CHARACTER, '');
+	    self::assertEquals(Delimiters::CHARACTER, '');
     }
 
-    public function testCopyConstant()
+    public function testCopyConstant(): void
     {
-        $this->assertEquals(OperationInterface::COPY, 'c');
+	    self::assertEquals(OperationInterface::COPY, 'c');
     }
 
-    public function testDeleteConstant()
+    public function testDeleteConstant(): void
     {
-        $this->assertEquals(OperationInterface::DELETE, 'd');
+	    self::assertEquals(OperationInterface::DELETE, 'd');
     }
 
-    public function testInsertConstant()
+    public function testInsertConstant(): void
     {
-        $this->assertEquals(OperationInterface::INSERT, 'i');
+	    self::assertEquals(OperationInterface::INSERT, 'i');
     }
 }

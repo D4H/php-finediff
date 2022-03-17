@@ -1,0 +1,15 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/spaze/phpstan-disallowed-calls/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-mockery/extension.neon
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+    reportUnmatchedIgnoredErrors: false
+    parallel:
+        processTimeout: 600.0

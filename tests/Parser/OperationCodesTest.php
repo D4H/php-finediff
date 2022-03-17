@@ -8,6 +8,7 @@ use FineDiff\Parser\OperationCodesInterface;
 use FineDiff\Parser\Operations\Copy;
 use FineDiff\Parser\Operations\OperationInterface;
 use Mockery as m;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 class OperationCodesTest extends TestCase
@@ -17,18 +18,13 @@ class OperationCodesTest extends TestCase
         m::close();
     }
 
-    public function testInstanceOf()
-    {
-        $this->assertInstanceOf(OperationCodesInterface::class, new OperationCodes());
-    }
-
-    public function testEmptyOperationCodes()
+    public function testEmptyOperationCodes(): void
     {
         $operation_codes = new OperationCodes();
-        $this->assertEmpty($operation_codes->getOperationCodes());
+	self::assertEmpty($operation_codes->getOperationCodes());
     }
 
-    public function testSetOperationCodes()
+    public function testSetOperationCodes(): void
     {
         $operation = m::mock(OperationInterface::class);
         $operation->shouldReceive('getOperationCode')->once()->andReturn('testing');
@@ -37,19 +33,10 @@ class OperationCodesTest extends TestCase
         $operation_codes->setOperationCodes([$operation]);
 
         $operation_codes = $operation_codes->getOperationCodes();
-        $this->assertEquals($operation_codes[0], 'testing');
+	self::assertEquals($operation_codes[0], 'testing');
     }
 
-    public function testNotOperation()
-    {
-        $operation_codes = new OperationCodes();
-
-        $this->expectException(OperationException::class);
-
-        $operation_codes->setOperationCodes(['test']);
-    }
-
-    public function testGetOperationCodes()
+    public function testGetOperationCodes(): void
     {
         $operation_one = m::mock(Copy::class);
         $operation_one->shouldReceive('getOperationCode')->andReturn('c5i');
@@ -62,12 +49,11 @@ class OperationCodesTest extends TestCase
 
         $operation_codes = $operation_codes->getOperationCodes();
 
-        $this->assertIsArray($operation_codes);
-        $this->assertEquals($operation_codes[0], 'c5i');
-        $this->assertEquals($operation_codes[1], '2c6d');
+	self::assertEquals($operation_codes[0], 'c5i');
+	self::assertEquals($operation_codes[1], '2c6d');
     }
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $operation_one = m::mock(Copy::class);
         $operation_one->shouldReceive('getOperationCode')->andReturn('c5i');
@@ -78,10 +64,10 @@ class OperationCodesTest extends TestCase
         $operation_codes = new OperationCodes();
         $operation_codes->setOperationCodes([$operation_one, $operation_two]);
 
-        $this->assertEquals($operation_codes->generate(), 'c5i2c6d');
+	self::assertEquals($operation_codes->generate(), 'c5i2c6d');
     }
 
-    public function testToString()
+    public function testToString(): void
     {
         $operation_one = m::mock(Copy::class);
         $operation_one->shouldReceive('getOperationCode')->andReturn('c5i');
@@ -92,7 +78,7 @@ class OperationCodesTest extends TestCase
         $operation_codes = new OperationCodes();
         $operation_codes->setOperationCodes([$operation_one, $operation_two]);
 
-        $this->assertEquals((string)$operation_codes, 'c5i2c6d');
-        $this->assertEquals((string)$operation_codes, $operation_codes->generate());
+	self::assertEquals((string)$operation_codes, 'c5i2c6d');
+	self::assertEquals((string)$operation_codes, $operation_codes->generate());
     }
 }

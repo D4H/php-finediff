@@ -7,6 +7,7 @@ use FineDiff\Granularity\GranularityInterface;
 use FineDiff\Parser\ParserInterface;
 use FineDiff\Render\Html;
 use Mockery as m;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 class SetTest extends TestCase
@@ -26,10 +27,13 @@ class SetTest extends TestCase
         m::close();
     }
 
-    public function testSetParser()
+    public function testSetParser(): void
     {
-        $this->assertFalse(method_exists($this->diff->getParser(), 'fooBar'));
+	    self::assertFalse(method_exists($this->diff->getParser(), 'fooBar'));
 
+	    /**
+	     * @var ParserInterface|MockInterface $parser
+	     */
         $parser = m::mock(ParserInterface::class);
         $parser->shouldReceive('fooBar')->once();
 
@@ -39,10 +43,13 @@ class SetTest extends TestCase
         $parser->fooBar();
     }
 
-    public function testSetRenderer()
+    public function testSetRenderer(): void
     {
-        $this->assertFalse(method_exists($this->diff->getRenderer(), 'fooBar'));
+	    self::assertFalse(method_exists($this->diff->getRenderer(), 'fooBar'));
 
+	    /**
+	     * @var Html|MockInterface $html
+	     */
         $html = m::mock(Html::class);
         $html->shouldReceive('fooBar')->once();
 
@@ -52,10 +59,13 @@ class SetTest extends TestCase
         $html->fooBar();
     }
 
-    public function testSetGranularity()
+    public function testSetGranularity(): void
     {
-        $this->assertFalse(method_exists($this->diff->getGranularity(), 'fooBar'));
+	    self::assertFalse(method_exists($this->diff->getGranularity(), 'fooBar'));
 
+	    /**
+	     * @var GranularityInterface|MockInterface $granularity
+	     */
         $granularity = m::mock(GranularityInterface::class);
         $granularity->shouldReceive('fooBar')->once();
 

@@ -26,27 +26,27 @@ class ProcessTest extends TestCase
         m::close();
     }
 
-    public function testInvalidOperationCode()
+    public function testInvalidOperationCode(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->text->process('Hello worlds', 123);
+        $this->text->process('Hello worlds', (string)123);
     }
 
-    public function testProcessWithString()
+    public function testProcessWithString(): void
     {
         $html = $this->text->process('Hello worlds', 'c5i:2c6d');
 
-        $this->assertEquals($html, 'Hello2 world');
+	self::assertEquals($html, 'Hello2 world');
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('generate')->andReturn('c5i:2c6d')->once();
 
         $html = $this->text->process('Hello worlds', $operation_codes);
 
-        $this->assertEquals($html, 'Hello2 world');
+	self::assertEquals($html, 'Hello2 world');
     }
 }

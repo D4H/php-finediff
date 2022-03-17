@@ -59,7 +59,7 @@ class Diff
      *
      * @param GranularityInterface $granularity
      */
-    public function setGranularity(GranularityInterface $granularity)
+    public function setGranularity(GranularityInterface $granularity): void
     {
         $this->parser->setGranularity($granularity);
     }
@@ -79,7 +79,7 @@ class Diff
      *
      * @param RendererInterface $renderer
      */
-    public function setRenderer(RendererInterface $renderer)
+    public function setRenderer(RendererInterface $renderer): void
     {
         $this->renderer = $renderer;
     }
@@ -99,7 +99,7 @@ class Diff
      *
      * @param ParserInterface $parser
      */
-    public function setParser(ParserInterface $parser)
+    public function setParser(ParserInterface $parser): void
     {
         $this->parser = $parser;
     }

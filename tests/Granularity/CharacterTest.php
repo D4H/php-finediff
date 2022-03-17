@@ -13,10 +13,10 @@ class CharacterTest extends TestCase
     /**
      * @var GranularityInterface
      */
-    protected $granularity;
+    protected GranularityInterface $granularity;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $delimiters = [
         Delimiters::PARAGRAPH,
@@ -30,37 +30,32 @@ class CharacterTest extends TestCase
         $this->granularity = new Character();
     }
 
-    public function testExtendsAndImplements()
+    public function testGetDelimiters(): void
     {
-        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
+	    self::assertEquals($this->granularity->getDelimiters(), $this->delimiters);
     }
 
-    public function testGetDelimiters()
-    {
-        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
-    }
-
-    public function testSetDelimiters()
+    public function testSetDelimiters(): void
     {
         $arr = array('one', 'two');
         $this->granularity->setDelimiters($arr);
-        $this->assertEquals($this->granularity->getDelimiters(), $arr);
+	self::assertEquals($this->granularity->getDelimiters(), $arr);
     }
 
-    public function testCountable()
+    public function testCountable(): void
     {
-        $this->assertCount(count($this->granularity), $this->delimiters);
+	    self::assertCount(count($this->granularity), $this->delimiters);
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         // Exists
         for ($i = 0; $i < count($this->delimiters) + 1; $i++) {
 
             if ($i !== count($this->delimiters)) {
-                $this->assertTrue(isset($this->granularity[$i]));
+		    self::assertTrue(isset($this->granularity[$i]));
             } else {
-                $this->assertFalse(isset($this->granularity[$i]));
+		    self::assertFalse(isset($this->granularity[$i]));
             }
         }
 
@@ -68,25 +63,25 @@ class CharacterTest extends TestCase
         for ($i = 0; $i < count($this->delimiters) + 1; $i++) {
 
             if ($i !== count($this->delimiters)) {
-                $this->assertEquals($this->granularity[$i], $this->delimiters[$i]);
+		    self::assertEquals($this->granularity[$i], $this->delimiters[$i]);
             } else {
-                $this->assertNull($this->granularity[$i]);
+		    self::assertNull($this->granularity[$i]);
             }
         }
 
         // Set
         for ($i = 0; $i < count($this->delimiters) + 1; $i++) {
 
-            $rand = mt_rand(0, 1000);
+            $rand = (string)mt_rand(0, 1000);
 
             $this->granularity[$i] = $rand;
-            $this->assertEquals($this->granularity[$i], $rand);
+	    self::assertEquals($this->granularity[$i], $rand);
         }
 
-        $this->assertEquals(count($this->granularity), count($this->delimiters) + 1);
+	self::assertEquals(count($this->granularity), count($this->delimiters) + 1);
 
         // Unset
         unset($this->granularity[ count($this->delimiters) ]);
-        $this->assertCount(count($this->granularity), $this->delimiters);
+	self::assertCount(count($this->granularity), $this->delimiters);
     }
 }

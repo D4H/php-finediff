@@ -25,13 +25,13 @@ class ProcessTest extends TestCase
         m::close();
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $operation_codes = m::mock(OperationCodes::class);
         $operation_codes->shouldReceive('generate')->andReturn('c5i:2c6d')->once();
 
         $html = $this->html->process('Hello worlds', $operation_codes);
 
-        $this->assertEquals($html, 'Hello<ins>2</ins> world<del>s</del>');
+	self::assertEquals($html, 'Hello<ins>2</ins> world<del>s</del>');
     }
 }

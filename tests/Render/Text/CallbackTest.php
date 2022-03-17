@@ -18,30 +18,30 @@ class CallbackTest extends TestCase
         $this->text = new Text();
     }
 
-    public function testCopy()
+    public function testCopy(): void
     {
         $output = $this->text->callback('c', 'Hello', 0, 5);
-        $this->assertEquals($output, 'Hello');
+	self::assertEquals($output, 'Hello');
 
         $output = $this->text->callback('c', 'Hello', 0, 3);
-        $this->assertEquals($output, 'Hel');
+	self::assertEquals($output, 'Hel');
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $output = $this->text->callback('d', 'elephant', 0, 100);
-        $this->assertEquals($output, '');
+	self::assertEquals($output, '');
 
         $output = $this->text->callback('d', 'elephant', 3, 4);
-        $this->assertEquals($output, '');
+	self::assertEquals($output, '');
     }
 
-    public function testInsert()
+    public function testInsert(): void
     {
         $output = $this->text->callback('i', 'monkey', 0, 6);
-        $this->assertEquals($output, 'monkey');
+	self::assertEquals($output, 'monkey');
 
         $output = $this->text->callback('i', 'monkey', 2, 3);
-        $this->assertEquals($output, 'nke');
+	self::assertEquals($output, 'nke');
     }
 }

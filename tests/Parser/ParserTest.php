@@ -28,28 +28,17 @@ class ParserTest extends TestCase
         m::close();
     }
 
-    public function testInstanceOf()
-    {
-        $this->assertInstanceOf(ParserInterface::class, $this->parser);
-    }
-
-    public function testDefaultOperationCodes()
-    {
-        $operation_codes = $this->parser->getOperationCodes();
-        $this->assertInstanceOf(OperationCodesInterface::class, $operation_codes);
-    }
-
-    public function testSetOperationCodes()
+    public function testSetOperationCodes(): void
     {
         $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('foo')->andReturn('bar');
         $this->parser->setOperationCodes($operation_codes);
 
         $operation_codes = $this->parser->getOperationCodes();
-        $this->assertEquals($operation_codes->foo(), 'bar');
+	self::assertEquals($operation_codes->foo(), 'bar');
     }
 
-    public function testParseBadGranularity()
+    public function testParseBadGranularity(): void
     {
         $granularity = m::mock(Character::class);
         $granularity->shouldReceive('count')->andReturn(0);
@@ -60,14 +49,12 @@ class ParserTest extends TestCase
         $parser->parse('hello world', 'hello2 worl');
     }
 
-    public function testParseSetOperationCodes()
+    public function testParseSetOperationCodes(): void
     {
         $operation_codes = m::mock(OperationCodesInterface::class);
         $operation_codes->shouldReceive('setOperationCodes')->once();
         $this->parser->setOperationCodes($operation_codes);
 
         $this->parser->parse('Hello worlds', 'Hello2 world');
-
-        $this->assertTrue(true);
     }
 }

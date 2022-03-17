@@ -15,7 +15,7 @@ class ParagraphTest extends TestCase
     protected $granularity;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $delimiters = [
         Delimiters::PARAGRAPH,
@@ -26,13 +26,8 @@ class ParagraphTest extends TestCase
         $this->granularity = new Paragraph();
     }
 
-    public function testExtendsAndImplements()
+    public function testGetDelimiters(): void
     {
-        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
-    }
-
-    public function testGetDelimiters()
-    {
-        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
+	    self::assertEquals($this->granularity->getDelimiters(), $this->delimiters);
     }
 }

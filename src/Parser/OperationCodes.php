@@ -23,12 +23,11 @@ class OperationCodes implements OperationCodesInterface
     /**
      * @inheritdoc
      */
-    public function setOperationCodes(array $operationCodes)
+    public function setOperationCodes(array $operationCodes): void
     {
         $this->operationCodes = [];
 
         // Ensure that all elements of the array are of the correct type
-        /** @var FineDiff\Parser\Operations\OperationInterface $operation_code */
         foreach ($operationCodes as $operationCode) {
             if (!is_a($operationCode, OperationInterface::class)) {
                 throw new OperationException('Invalid operation code object');

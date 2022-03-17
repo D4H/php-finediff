@@ -7,7 +7,7 @@ class Copy implements OperationInterface
     /**
      * @var int
      */
-    private $len;
+    private int $len;
 
     /**
      * Set the initial length.
@@ -22,7 +22,7 @@ class Copy implements OperationInterface
     /**
      * @inheritdoc
      */
-    public function getFromLen()
+    public function getFromLen(): int
     {
         return $this->len;
     }
@@ -53,7 +53,7 @@ class Copy implements OperationInterface
      * @param int $size Amount to increase the string length by.
      * @return int New length
      */
-    public function increase($size)
+    public function increase($size): int
     {
         return $this->len += $size;
     }

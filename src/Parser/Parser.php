@@ -15,35 +15,35 @@ class Parser implements ParserInterface
     /**
      * @var GranularityInterface
      */
-    protected $granularity;
+    protected GranularityInterface $granularity;
 
     /**
      * @var OperationCodesInterface
      */
-    protected $operationCodes;
+    protected OperationCodesInterface $operationCodes;
 
     /**
      * @var string Text we are comparing against.
      */
-    protected $formText;
+    protected string $formText;
 
     /**
      * @var int Position of the $from_text we are at.
      */
-    protected $fromOffset = 0;
+    protected int $fromOffset = 0;
 
     /**
-     * @var OperationInterface
+     * @var OperationInterface|null
      */
-    protected $lastEdit;
+    protected ?OperationInterface $lastEdit;
 
     /**
      * @var int Current position in the granularity array.
      */
-    protected $stackPointer = 0;
+    protected int $stackPointer = 0;
 
     /**
-     * @var array Holds the individual operation codes as the diff takes place.
+     * @var OperationInterface[] Holds the individual operation codes as the diff takes place.
      */
     protected $edits = [];
 
@@ -69,7 +69,7 @@ class Parser implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function setGranularity(GranularityInterface $granularity)
+    public function setGranularity(GranularityInterface $granularity): void
     {
         $this->granularity = $granularity;
     }
@@ -85,7 +85,7 @@ class Parser implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function setOperationCodes(OperationCodesInterface $operationCodes)
+    public function setOperationCodes(OperationCodesInterface $operationCodes): void
     {
         $this->operationCodes = $operationCodes;
     }
@@ -122,30 +122,32 @@ class Parser implements ParserInterface
      * @param string $fromText
      * @param string $toText
      */
-    protected function process($fromText, $toText)
+    protected function process($fromText, $toText): void
     {
-        // Lets get parsing
+	// Lets get parsing
+	/**
+	 * @var string|null $delimiters
+	 */
         $delimiters = $this->granularity[$this->stackPointer++];
         $hasNextStage = $this->stackPointer < count($this->granularity);
 
         // Actually perform diff
         $diff = $this->diff($fromText, $toText, $delimiters);
-        $diff = is_array($diff) ? $diff : [];
 
         foreach ($diff as $fragment) {
             // increase granularity
             if ($fragment instanceof Replace && $hasNextStage) {
                 $this->process(
-                    mb_substr($this->formText, $this->fromOffset, $fragment->getFromLen()),
+                    mb_substr($this->formText, $this->fromOffset, (int)$fragment->getFromLen()),
                     $fragment->getText()
                 );
-            } elseif ($fragment instanceof Copy && $this->lastEdit instanceof Copy) {
+            } elseif ($fragment instanceof Copy && $this->lastEdit instanceof Copy && $this->edits[count($this->edits)-1] instanceof Copy) {
                 // fuse copy ops whenever possible
                 $this->edits[count($this->edits)-1]->increase($fragment->getFromLen());
                 $this->fromOffset += $fragment->getFromLen();
             } else {
                 $this->edits[] = $this->lastEdit = $fragment;
-                $this->fromOffset += $fragment->getFromLen();
+                $this->fromOffset += (int)$fragment->getFromLen();
             }
         }
 
@@ -161,11 +163,11 @@ class Parser implements ParserInterface
      *
      * @return OperationInterface[]
      */
-    protected function diff($fromText, $toText, $delimiters): array
+    protected function diff($fromText, $toText, ?string $delimiters): array
     {
         // Empty delimiter means character-level diffing.
         // In such case, use code path optimized for character-level diffing.
-        if (empty($delimiters)) {
+        if ($delimiters === null || $delimiters === '') {
             return $this->charDiff($fromText, $toText);
         }
 
@@ -178,7 +180,8 @@ class Parser implements ParserInterface
         $toFragments = $this->extractFragments($toText, $delimiters);
 
         $jobs = [[0, $fromTextLen, 0, $toTextLen]];
-        $cachedArrayKeys = [];
+	$cachedArrayKeys = [];
+	$bestFromStart = 0;
 
         while ($job = array_pop($jobs)) {
             // get the segments which must be diff'ed
@@ -188,10 +191,10 @@ class Parser implements ParserInterface
             $fromSegmentLength = $fromSegmentEnt - $fromSegmentStart;
             $toSegmentLength = $toSegmentEnd - $toSegmentStart;
 
-            if (!$fromSegmentLength || !$toSegmentLength) {
-                if ($fromSegmentLength) {
+            if ($fromSegmentLength === 0 || $toSegmentLength === 0) {
+                if ($fromSegmentLength > 0) {
                     $result[$fromSegmentStart * 4] = new Delete($fromSegmentLength);
-                } else if ($toSegmentLength) {
+                } else if ($toSegmentLength > 0) {
                     $result[$fromSegmentStart * 4 + 1] = new Insert(mb_substr($toText, $toSegmentStart, $toSegmentLength));
                 }
 
@@ -202,7 +205,8 @@ class Parser implements ParserInterface
             $bestCopyLength = 0;
 
             $fromBaseFragmentIndex = $fromSegmentStart;
-            $cachedArrayKeysForCurrentSegment = [];
+	    $cachedArrayKeysForCurrentSegment = [];
+	    $bestToStart = 0;
 
             while ($fromBaseFragmentIndex < $fromSegmentEnt) {
                 $fromBaseFragment = $fromFragments[$fromBaseFragmentIndex];
@@ -288,7 +292,7 @@ class Parser implements ParserInterface
                 }
             }
 
-            if ($bestCopyLength) {
+            if ($bestCopyLength > 0) {
                 $jobs[] = [$fromSegmentStart, $bestFromStart, $toSegmentStart, $bestToStart];
                 $result[$bestFromStart * 4 + 2] = new Copy($bestCopyLength);
                 $jobs[] = [$bestFromStart + $bestCopyLength, $fromSegmentEnt, $bestToStart + $bestCopyLength, $toSegmentEnd];
@@ -323,10 +327,10 @@ class Parser implements ParserInterface
             $toSegmentLen = $toSegmentEnd - $toSegmentStart;
 
             // catch easy cases first
-            if (!$fromSegmentLen || !$toSegmentLen) {
-                if ($fromSegmentLen) {
+            if ($fromSegmentLen === 0 || $toSegmentLen === 0) {
+                if ($fromSegmentLen > 0) {
                     $result[$fromSegmentStart * 4 + 0] = new Delete($fromSegmentLen);
-                } else if ($toSegmentLen) {
+                } else if ($toSegmentLen > 0) {
                     $result[$fromSegmentStart * 4 + 1] = new Insert(mb_substr($toText, $toSegmentStart, $toSegmentLen));
                 }
 
@@ -352,7 +356,11 @@ class Parser implements ParserInterface
                     }
 
                     $copyLen--;
-                }
+		}
+
+		if (!isset($fromCopyStart) || $fromCopyStart === false) {
+			throw new \RuntimeException('Unable to find valid fromCopyStart');
+		}
             } else {
                 $copyLen = $fromSegmentLen;
 
@@ -372,11 +380,15 @@ class Parser implements ParserInterface
                     }
 
                     $copyLen--;
-                }
+		}
+
+		if (!isset($toCopyStart) || $toCopyStart === false) {
+			throw new \RuntimeException('Unable to find valid toCopyStart');
+		}
             }
 
             // match found
-            if ($copyLen) {
+            if ($copyLen > 0) {
                 $jobs[] = [$fromSegmentStart, $fromCopyStart, $toSegmentStart, $toCopyStart];
                 $result[$fromCopyStart * 4 + 2] = new Copy($copyLen);
                 $jobs[] = [$fromCopyStart + $copyLen, $fromSegmentEnd, $toCopyStart + $copyLen, $toSegmentEnd];
@@ -401,14 +413,14 @@ class Parser implements ParserInterface
      *
      * @param string $text
      * @param string $delimiters
-     * @param array
+     * @return string[]
      *
      * @return string[]
      */
-    protected function extractFragments($text, $delimiters): array
+    protected function extractFragments(string $text, string $delimiters): array
     {
         // special case: split into characters
-        if (empty($delimiters)) {
+        if ($delimiters === '') {
             $chars = mb_str_split($text);
             $chars[mb_strlen($text)] = '';
 

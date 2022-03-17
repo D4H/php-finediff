@@ -2,6 +2,8 @@
 
 namespace FineDiff\Render;
 
+use FineDiff\Parser\OperationCodesInterface;
+
 interface RendererInterface
 {
     /**
@@ -12,7 +14,7 @@ interface RendererInterface
      *
      * @return string
      */
-    public function process($fromText, $operationCodes): string;
+    public function process(string $fromText, string|OperationCodesInterface $operationCodes): string;
 
     /**
      * @param string $opcode
@@ -22,5 +24,5 @@ interface RendererInterface
      *
      * @return string
      */
-    public function callback($opcode, $from, $offset, $length): string;
+    public function callback(string $opcode, string $from, int $offset, int $length): string;
 }

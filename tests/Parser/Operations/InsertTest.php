@@ -8,36 +8,30 @@ use PHPUnit\Framework\TestCase;
 
 class InsertTest extends TestCase
 {
-    public function testImplementsOperationInterface()
-    {
-        $replace = new Insert('hello world');
-        $this->assertInstanceOf(OperationInterface::class, $replace);
-    }
-
-    public function testGetFromLen()
+    public function testGetFromLen(): void
     {
         $insert = new Insert('hello world');
-        $this->assertEquals($insert->getFromLen(), 0);
+	self::assertEquals($insert->getFromLen(), 0);
     }
 
-    public function testGetToLen()
+    public function testGetToLen(): void
     {
         $insert = new Insert('hello world');
-        $this->assertEquals($insert->getToLen(), 11);
+	self::assertEquals($insert->getToLen(), 11);
     }
 
-    public function testGetText()
+    public function testGetText(): void
     {
         $insert = new Insert('foobar');
-        $this->assertEquals($insert->getText(), 'foobar');
+	self::assertEquals($insert->getText(), 'foobar');
     }
 
-    public function testGetOperationCode()
+    public function testGetOperationCode(): void
     {
         $insert = new Insert('C');
-        $this->assertEquals($insert->getOperationCode(), 'i:C');
+	self::assertEquals($insert->getOperationCode(), 'i:C');
 
         $insert = new Insert('blue');
-        $this->assertEquals($insert->getOperationCode(), 'i4:blue');
+	self::assertEquals($insert->getOperationCode(), 'i4:blue');
     }
 }

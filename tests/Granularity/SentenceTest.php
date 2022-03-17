@@ -9,13 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 class SentenceTest extends TestCase
 {
-    /**
-     * @var GranularityInterface
-     */
-    protected $granularity;
+    protected GranularityInterface $granularity;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $delimiters = [
         Delimiters::PARAGRAPH,
@@ -27,13 +24,8 @@ class SentenceTest extends TestCase
         $this->granularity = new Sentence();
     }
 
-    public function testExtendsAndImplements()
+    public function testGetDelimiters(): void
     {
-        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
-    }
-
-    public function testGetDelimiters()
-    {
-        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
+	    self::assertEquals($this->granularity->getDelimiters(), $this->delimiters);
     }
 }

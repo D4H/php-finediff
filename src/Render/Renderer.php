@@ -11,13 +11,8 @@ abstract class Renderer implements RendererInterface
     /**
      * {@inheritdoc}
      */
-    public function process($fromText, $operationCodes): string
+    public function process(string $fromText, string|OperationCodesInterface $operationCodes): string
     {
-        // Validate operation codes
-        if (!is_string($operationCodes) && !($operationCodes instanceof OperationCodesInterface)) {
-            throw new InvalidArgumentException('Invalid operation codes type');
-        }
-
         $operationCodes = ($operationCodes instanceof OperationCodesInterface) ? $operationCodes->generate() : $operationCodes;
 
         // Holds the generated string that is returned
@@ -32,7 +27,7 @@ abstract class Renderer implements RendererInterface
             $operationCodesOffset++;
             $n = (int) mb_substr($operationCodes, $operationCodesOffset);
 
-            if ($n) {
+            if ($n > 0) {
                 $operationCodesOffset += mb_strlen((string)$n);
             } else {
                 $n = 1;

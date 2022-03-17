@@ -9,12 +9,12 @@ use InvalidArgumentException;
 class Html extends Renderer
 {
     /**
-     * @var array
+     * @var array<string,string|int> $configRenderer
      */
     protected $configRenderer = [];
 
     /**
-     * @param array $configRenderer
+     * @param array<string,string|int> $configRenderer
      */
     public function __construct(array $configRenderer = [])
     {
@@ -68,8 +68,8 @@ class Html extends Renderer
     {
         return htmlentities(
             $string,
-            $this->configRenderer['quote_style'],
-            $this->configRenderer['encoding']
+            (int) $this->configRenderer['quote_style'],
+            (string) $this->configRenderer['encoding']
         );
     }
 

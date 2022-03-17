@@ -7,7 +7,7 @@ class Insert implements OperationInterface
     /**
      * @var string
      */
-    private $text;
+    private string $text;
 
     /**
      * Sets the text that the operation is working with.
@@ -22,7 +22,7 @@ class Insert implements OperationInterface
     /**
      * @inheritdoc
      */
-    public function getFromLen()
+    public function getFromLen(): int
     {
         return 0;
     }

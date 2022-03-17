@@ -9,7 +9,7 @@ class Sentence implements GranularityInterface
     use Granularity;
 
     /**
-     * @var array
+     * @var string[]
      */
     private $delimiters = [
         Delimiters::PARAGRAPH,

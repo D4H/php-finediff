@@ -7,18 +7,18 @@ class Replace implements OperationInterface
     /**
      * @var int|string
      */
-    private $len;
+    private int|string $len;
 
     /**
      * @var string
      */
-    private $text;
+    private string $text;
 
     /**
-     * @param $fromLen
+     * @param int|string $fromLen
      * @param string $text
      */
-    public function __construct($fromLen, string $text)
+    public function __construct(int|string $fromLen, string $text)
     {
         $this->len = $fromLen;
         $this->text = $text;
@@ -27,7 +27,7 @@ class Replace implements OperationInterface
     /**
      * @inheritdoc
      */
-    public function getFromLen()
+    public function getFromLen(): int|string
     {
         return $this->len;
     }

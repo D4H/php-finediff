@@ -32,28 +32,28 @@ class SimpleTest extends TestCase
         string $to,
         string $operationCodes,
         string $html
-    ) {
+    ): void {
         // Arrange
         $diff = new Diff($granularity);
         $generatedOperationCodes = $diff->getOperationCodes($from, $to);
 
         // Generate operation codes
-        $this->assertEquals($operationCodes, $generatedOperationCodes);
+	self::assertEquals($operationCodes, $generatedOperationCodes);
 
         // Render to text from operation codes
         $render = new Text();
-        $this->assertEquals($to, $render->process($from, $generatedOperationCodes));
+	self::assertEquals($to, $render->process($from, $generatedOperationCodes));
 
         // Render to html from operation codes
         $render = new Html();
-        $this->assertEquals($html, $render->process($from, $generatedOperationCodes));
+	self::assertEquals($html, $render->process($from, $generatedOperationCodes));
 
         // Render
-        $this->assertEquals($html, $diff->render($from, $to));
+	self::assertEquals($html, $diff->render($from, $to));
     }
 
     /**
-     * @return array
+     * @return array<string,array<int,mixed>>
      */
     public function dataProvider(): array
     {
@@ -80,11 +80,11 @@ class SimpleTest extends TestCase
     /**
      * @param string $file
      *
-     * @return array
+     * @return array<int,string>
      */
     private function getFile(string $file): array
     {
-        $txt = file_get_contents(__DIR__.'/Resources/'.$file.'.txt');
+        $txt = (string) file_get_contents(__DIR__.'/Resources/'.$file.'.txt');
         $txt = explode('==========', $txt);
 
         $from = trim($txt[0]);

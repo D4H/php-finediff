@@ -7,7 +7,7 @@ class Delete implements OperationInterface
     /**
      * @var int
      */
-    private $len;
+    private int $len;
 
     /**
      * Set the initial length.
@@ -22,7 +22,7 @@ class Delete implements OperationInterface
     /**
      * @inheritdoc
      */
-    public function getFromLen()
+    public function getFromLen(): int
     {
         return $this->len;
     }

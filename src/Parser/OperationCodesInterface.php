@@ -10,7 +10,7 @@ interface OperationCodesInterface
     /**
      * Get the operation codes.
      *
-     * @return array
+     * @return string[]
      */
     public function getOperationCodes(): array;
 
@@ -21,7 +21,7 @@ interface OperationCodesInterface
      *
      * @throws OperationException
      */
-    public function setOperationCodes(array $operationCodes);
+    public function setOperationCodes(array $operationCodes): void;
 
     /**
      * Return the operation codes in a format that can then be rendered.

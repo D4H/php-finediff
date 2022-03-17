@@ -8,39 +8,38 @@ use PHPUnit\Framework\TestCase;
 
 class CopyTest extends TestCase
 {
-    public function testImplementsOperationInterface()
+    public function testImplementsOperationInterface(): void
     {
         $replace = new Copy(10);
-        $this->assertInstanceOf(OperationInterface::class, $replace);
     }
 
-    public function testGetFromLen()
+    public function testGetFromLen(): void
     {
         $copy = new Copy(10);
-        $this->assertEquals($copy->getFromLen(), 10);
+	self::assertEquals($copy->getFromLen(), 10);
     }
 
-    public function testGetToLen()
+    public function testGetToLen(): void
     {
         $copy = new Copy(342);
-        $this->assertEquals($copy->getToLen(), 342);
+	self::assertEquals($copy->getToLen(), 342);
     }
 
-    public function testGetOperationCode()
+    public function testGetOperationCode(): void
     {
         $copy = new Copy(1);
-        $this->assertEquals($copy->getOperationCode(), 'c');
+	self::assertEquals($copy->getOperationCode(), 'c');
 
         $copy = new Copy(24);
-        $this->assertEquals($copy->getOperationCode(), 'c24');
+	self::assertEquals($copy->getOperationCode(), 'c24');
     }
 
-    public function testIncrease()
+    public function testIncrease(): void
     {
         $copy = new Copy(25);
 
-        $this->assertEquals($copy->increase(5), 30);
-        $this->assertEquals($copy->increase(10), 40);
-        $this->assertEquals($copy->increase(64), 104);
+	self::assertEquals($copy->increase(5), 30);
+	self::assertEquals($copy->increase(10), 40);
+	self::assertEquals($copy->increase(64), 104);
     }
 }

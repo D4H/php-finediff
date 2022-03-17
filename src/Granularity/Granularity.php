@@ -7,7 +7,7 @@ trait Granularity
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->delimiters[$offset]);
     }
@@ -15,7 +15,7 @@ trait Granularity
     /**
      * @inheritdoc
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return isset($this->delimiters[$offset]) ? $this->delimiters[$offset] : null;
     }
@@ -23,8 +23,12 @@ trait Granularity
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
+	if (!is_string($value)) {
+	    return;
+	}
+
         if ($offset === null) {
             $this->delimiters[] = $value;
         } else {
@@ -35,7 +39,7 @@ trait Granularity
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->delimiters[$offset]);
     }
@@ -45,13 +49,14 @@ trait Granularity
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->delimiters);
     }
 
     /**
      * @inheritdoc
+     * @return string[]
      */
     public function getDelimiters(): array
     {
@@ -60,8 +65,9 @@ trait Granularity
 
     /**
      * @inheritdoc
+     * @param string[] $delimiters
      */
-    public function setDelimiters(array $delimiters)
+    public function setDelimiters(array $delimiters): void
     {
         $this->delimiters = $delimiters;
     }

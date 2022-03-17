@@ -24,22 +24,21 @@ class DefaultsTest extends TestCase
         $this->diff = new Diff();
     }
 
-    public function testGetGranularity()
+    public function testGetGranularity(): void
     {
-        $this->assertInstanceOf(GranularityInterface::class, $this->diff->getGranularity());
-        $this->assertInstanceOf(Character::class, $this->diff->getGranularity());
+	self::assertInstanceOf(Character::class, $this->diff->getGranularity());
     }
 
-    public function testGetRenderer()
+    public function testGetRenderer(): void
     {
-        $this->assertInstanceOf(Html::class, $this->diff->getRenderer());
-        $this->assertInstanceOf(Renderer::class, $this->diff->getRenderer());
-        $this->assertInstanceOf(RendererInterface::class, $this->diff->getRenderer());
+	    self::assertInstanceOf(Html::class, $this->diff->getRenderer());
+	    self::assertInstanceOf(Renderer::class, $this->diff->getRenderer());
+	    self::assertInstanceOf(RendererInterface::class, $this->diff->getRenderer());
     }
 
-    public function testGetParser()
+    public function testGetParser(): void
     {
-        $this->assertInstanceOf(Parser::class, $this->diff->getParser());
-        $this->assertInstanceOf(ParserInterface::class, $this->diff->getParser());
+	    self::assertInstanceOf(Parser::class, $this->diff->getParser());
+	    self::assertInstanceOf(ParserInterface::class, $this->diff->getParser());
     }
 }

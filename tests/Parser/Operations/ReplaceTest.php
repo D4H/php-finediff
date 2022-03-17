@@ -8,51 +8,45 @@ use PHPUnit\Framework\TestCase;
 
 class ReplaceTest extends TestCase
 {
-    public function testImplementsOperationInterface()
+    public function testGetFromLen(): void
     {
         $replace = new Replace('hello', 'world');
-        $this->assertInstanceOf(OperationInterface::class, $replace);
+	self::assertEquals($replace->getFromLen(), 'hello');
     }
 
-    public function testGetFromLen()
+    public function testGetToLen(): void
     {
         $replace = new Replace('hello', 'world');
-        $this->assertEquals($replace->getFromLen(), 'hello');
+	self::assertEquals($replace->getToLen(), 5);
     }
 
-    public function testGetToLen()
-    {
-        $replace = new Replace('hello', 'world');
-        $this->assertEquals($replace->getToLen(), 5);
-    }
-
-    public function testGetText()
+    public function testGetText(): void
     {
         $replace = new Replace('foo', 'bar');
-        $this->assertEquals($replace->getText(), 'bar');
+	self::assertEquals($replace->getText(), 'bar');
     }
 
-    public function testGetOperationCodeSingleTextChar()
+    public function testGetOperationCodeSingleTextChar(): void
     {
         $replace = new Replace(1, 'c');
-        $this->assertEquals($replace->getOperationCode(), 'di:c');
+	self::assertEquals($replace->getOperationCode(), 'di:c');
 
         $replace = new Replace('r', 'c');
-        $this->assertEquals($replace->getOperationCode(), 'dri:c');
+	self::assertEquals($replace->getOperationCode(), 'dri:c');
 
         $replace = new Replace('rob', 'c');
-        $this->assertEquals($replace->getOperationCode(), 'drobi:c');
+	self::assertEquals($replace->getOperationCode(), 'drobi:c');
     }
 
-    public function testGetOpcodeLongerTextString()
+    public function testGetOpcodeLongerTextString(): void
     {
         $replace = new Replace(1, 'crowe');
-        $this->assertEquals($replace->getOperationCode(), 'di5:crowe');
+	self::assertEquals($replace->getOperationCode(), 'di5:crowe');
 
         $replace = new Replace('r', 'crowe');
-        $this->assertEquals($replace->getOperationCode(), 'dri5:crowe');
+	self::assertEquals($replace->getOperationCode(), 'dri5:crowe');
 
         $replace = new Replace('rob', 'crowe');
-        $this->assertEquals($replace->getOperationCode(), 'drobi5:crowe');
+	self::assertEquals($replace->getOperationCode(), 'drobi5:crowe');
     }
 }

@@ -26,7 +26,7 @@ interface ParserInterface
      *
      * @param GranularityInterface $granularity
      */
-    public function setGranularity(GranularityInterface $granularity);
+    public function setGranularity(GranularityInterface $granularity): void;
 
     /**
      * Get the operation codes object that is used to store all the operation codes.
@@ -42,7 +42,7 @@ interface ParserInterface
      *
      * @return void
      */
-    public function setOperationCodes(OperationCodesInterface $operationCodes);
+    public function setOperationCodes(OperationCodesInterface $operationCodes): void;
 
     /**
      * Generates the operation codes needed to transform one string to another.

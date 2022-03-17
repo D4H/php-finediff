@@ -9,7 +9,7 @@ class Character implements GranularityInterface
     use Granularity;
 
     /**
-     * @var array
+     * @var string[] $delimiters
      */
     private $delimiters = [
         Delimiters::PARAGRAPH,

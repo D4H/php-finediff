@@ -26,14 +26,14 @@ interface OperationInterface
     const INSERT = 'i';
 
     /**
-     * @return int
+     * @return int|string
      */
-    public function getFromLen();
+    public function getFromLen(): int|string;
 
     /**
      * @return int
      */
-    public function getToLen();
+    public function getToLen(): int;
 
     /**
      * @return string Operation code for this operation.

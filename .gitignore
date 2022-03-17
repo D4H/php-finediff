@@ -1,2 +1,15 @@
 /vendor
-composer.lock
+.php-cs-fixer.cache
+*.sw*
+node_modules
+cghooks.lock
+.idea
+.vscode
+.phpintel*
+.styleci.yml
+.php_cs.cache
+# PHPStorm
+.phpstorm.meta.php
+# IDE generic
+_ide_helper.php
+.phpunit.result.cache

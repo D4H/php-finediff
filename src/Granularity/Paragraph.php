@@ -6,12 +6,12 @@ use FineDiff\Delimiters;
 
 class Paragraph implements GranularityInterface
 {
-    use Granularity;
+	use Granularity;
 
-    /**
-     * @var array
-     */
-    private $delimiters = [
-        Delimiters::PARAGRAPH,
-    ];
+	/**
+	 * @var string[]
+	 */
+	private $delimiters = [
+		Delimiters::PARAGRAPH,
+	];
 }

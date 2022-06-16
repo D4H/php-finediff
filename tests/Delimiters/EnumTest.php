@@ -9,25 +9,16 @@ use ReflectionMethod;
 
 class EnumTest extends TestCase
 {
-    public function testCantInstantiate()
-    {
-        $class = new ReflectionClass(Delimiters::class);
-        $methods = $class->getMethods(ReflectionMethod::IS_PRIVATE);
+	public function testCantInstantiate(): void
+	{
+		$class = new ReflectionClass(Delimiters::class);
+		$methods = $class->getMethods(ReflectionMethod::IS_PRIVATE);
 
-        $this->assertTrue(count($methods) >= 1);
+		self::assertTrue(count($methods) >= 1);
 
-        $found = false;
+		$found = false;
 
-        foreach ($methods as $method) {
-            if ($method->name === '__construct') {
-                $found = true;
-                $this->assertTrue(true);
-                break;
-            }
-        }
-
-        if (!$found) {
-            $this->assertTrue(false);
-        }
-    }
+		$constructor = array_filter($methods, fn ($method) => $method->name === '__construct');
+		self::assertEquals(1, count($constructor));
+	}
 }

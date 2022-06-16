@@ -9,31 +9,23 @@ use PHPUnit\Framework\TestCase;
 
 class SentenceTest extends TestCase
 {
-    /**
-     * @var GranularityInterface
-     */
-    protected $granularity;
+	protected GranularityInterface $granularity;
 
-    /**
-     * @var array
-     */
-    protected $delimiters = [
-        Delimiters::PARAGRAPH,
-        Delimiters::SENTENCE,
-    ];
+	/**
+	 * @var string[]
+	 */
+	protected $delimiters = [
+		Delimiters::PARAGRAPH,
+		Delimiters::SENTENCE,
+	];
 
-    public function setUp(): void
-    {
-        $this->granularity = new Sentence();
-    }
+	public function setUp(): void
+	{
+		$this->granularity = new Sentence();
+	}
 
-    public function testExtendsAndImplements()
-    {
-        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
-    }
-
-    public function testGetDelimiters()
-    {
-        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
-    }
+	public function testGetDelimiters(): void
+	{
+		self::assertEquals($this->granularity->getDelimiters(), $this->delimiters);
+	}
 }

@@ -9,32 +9,24 @@ use PHPUnit\Framework\TestCase as TestCase;
 
 class WordTest extends TestCase
 {
-    /**
-     * @var GranularityInterface
-     */
-    protected $granularity;
+	protected GranularityInterface $granularity;
 
-    /**
-     * @var array
-     */
-    protected $delimiters = [
-        Delimiters::PARAGRAPH,
-        Delimiters::SENTENCE,
-        Delimiters::WORD,
-    ];
+	/**
+	 * @var string[]
+	 */
+	protected $delimiters = [
+		Delimiters::PARAGRAPH,
+		Delimiters::SENTENCE,
+		Delimiters::WORD,
+	];
 
-    public function setUp(): void
-    {
-        $this->granularity = new Word();
-    }
+	public function setUp(): void
+	{
+		$this->granularity = new Word();
+	}
 
-    public function testExtendsAndImplements()
-    {
-        $this->assertInstanceOf(GranularityInterface::class, $this->granularity);
-    }
-
-    public function testGetDelimiters()
-    {
-        $this->assertEquals($this->granularity->getDelimiters(), $this->delimiters);
-    }
+	public function testGetDelimiters(): void
+	{
+		self::assertEquals($this->granularity->getDelimiters(), $this->delimiters);
+	}
 }

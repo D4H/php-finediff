@@ -6,13 +6,13 @@ use FineDiff\Delimiters;
 
 class Sentence implements GranularityInterface
 {
-    use Granularity;
+	use Granularity;
 
-    /**
-     * @var array
-     */
-    private $delimiters = [
-        Delimiters::PARAGRAPH,
-        Delimiters::SENTENCE,
-    ];
+	/**
+	 * @var string[]
+	 */
+	private $delimiters = [
+		Delimiters::PARAGRAPH,
+		Delimiters::SENTENCE,
+	];
 }

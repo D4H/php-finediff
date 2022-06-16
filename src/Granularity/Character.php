@@ -6,15 +6,15 @@ use FineDiff\Delimiters;
 
 class Character implements GranularityInterface
 {
-    use Granularity;
+	use Granularity;
 
-    /**
-     * @var array
-     */
-    private $delimiters = [
-        Delimiters::PARAGRAPH,
-        Delimiters::SENTENCE,
-        Delimiters::WORD,
-        Delimiters::CHARACTER,
-    ];
+	/**
+	 * @var string[] $delimiters
+	 */
+	private $delimiters = [
+		Delimiters::PARAGRAPH,
+		Delimiters::SENTENCE,
+		Delimiters::WORD,
+		Delimiters::CHARACTER,
+	];
 }

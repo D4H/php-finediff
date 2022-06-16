@@ -6,14 +6,14 @@ use FineDiff\Delimiters;
 
 class Word implements GranularityInterface
 {
-    use Granularity;
+	use Granularity;
 
-    /**
-     * @var array
-     */
-    private $delimiters = [
-        Delimiters::PARAGRAPH,
-        Delimiters::SENTENCE,
-        Delimiters::WORD,
-    ];
+	/**
+	 * @var string[]
+	 */
+	private $delimiters = [
+		Delimiters::PARAGRAPH,
+		Delimiters::SENTENCE,
+		Delimiters::WORD,
+	];
 }

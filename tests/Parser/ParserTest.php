@@ -12,62 +12,49 @@ use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    /**
-     * @var ParserInterface
-     */
-    protected $parser;
+	/**
+	 * @var ParserInterface
+	 */
+	protected $parser;
 
-    public function setUp(): void
-    {
-        $granularity  = new Character();
-        $this->parser = new Parser($granularity);
-    }
+	public function setUp(): void
+	{
+		$granularity  = new Character();
+		$this->parser = new Parser($granularity);
+	}
 
-    public function tearDown(): void
-    {
-        m::close();
-    }
+	public function tearDown(): void
+	{
+		m::close();
+	}
 
-    public function testInstanceOf()
-    {
-        $this->assertInstanceOf(ParserInterface::class, $this->parser);
-    }
+	public function testSetOperationCodes(): void
+	{
+		$operation_codes = m::mock(OperationCodesInterface::class);
+		$operation_codes->shouldReceive('foo')->andReturn('bar');
+		$this->parser->setOperationCodes($operation_codes);
 
-    public function testDefaultOperationCodes()
-    {
-        $operation_codes = $this->parser->getOperationCodes();
-        $this->assertInstanceOf(OperationCodesInterface::class, $operation_codes);
-    }
+		$operation_codes = $this->parser->getOperationCodes();
+		self::assertEquals($operation_codes->foo(), 'bar');
+	}
 
-    public function testSetOperationCodes()
-    {
-        $operation_codes = m::mock(OperationCodesInterface::class);
-        $operation_codes->shouldReceive('foo')->andReturn('bar');
-        $this->parser->setOperationCodes($operation_codes);
+	public function testParseBadGranularity(): void
+	{
+		$granularity = m::mock(Character::class);
+		$granularity->shouldReceive('count')->andReturn(0);
+		$parser = new Parser($granularity);
 
-        $operation_codes = $this->parser->getOperationCodes();
-        $this->assertEquals($operation_codes->foo(), 'bar');
-    }
+		$this->expectException(GranularityCountException::class);
 
-    public function testParseBadGranularity()
-    {
-        $granularity = m::mock(Character::class);
-        $granularity->shouldReceive('count')->andReturn(0);
-        $parser = new Parser($granularity);
+		$parser->parse('hello world', 'hello2 worl');
+	}
 
-        $this->expectException(GranularityCountException::class);
+	public function testParseSetOperationCodes(): void
+	{
+		$operation_codes = m::mock(OperationCodesInterface::class);
+		$operation_codes->shouldReceive('setOperationCodes')->once();
+		$this->parser->setOperationCodes($operation_codes);
 
-        $parser->parse('hello world', 'hello2 worl');
-    }
-
-    public function testParseSetOperationCodes()
-    {
-        $operation_codes = m::mock(OperationCodesInterface::class);
-        $operation_codes->shouldReceive('setOperationCodes')->once();
-        $this->parser->setOperationCodes($operation_codes);
-
-        $this->parser->parse('Hello worlds', 'Hello2 world');
-
-        $this->assertTrue(true);
-    }
+		$this->parser->parse('Hello worlds', 'Hello2 world');
+	}
 }

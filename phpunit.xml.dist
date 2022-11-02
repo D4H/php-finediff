@@ -1,41 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    colors="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    stopOnError="false"
-    stopOnFailure="false"
-    stopOnIncomplete="false"
-    bootstrap="vendor/autoload.php"
->
-    <testsuites>
-        <testsuite name="Delimiters">
-            <directory suffix=".php">tests/Delimiters</directory>
-        </testsuite>
-        <testsuite name="Diff">
-            <directory suffix=".php">tests/Diff</directory>
-        </testsuite>
-        <testsuite name="Granularity">
-            <directory suffix=".php">tests/Granularity</directory>
-        </testsuite>
-        <testsuite name="Parser">
-            <directory suffix=".php">tests/Parser</directory>
-        </testsuite>
-        <testsuite name="Render">
-            <directory suffix=".php">tests/Render</directory>
-        </testsuite>
-        <testsuite name="Usage">
-            <directory suffix=".php">tests/Usage</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src</directory>
-            <exclude>
-                <directory suffix=".php">PEAR_INSTALL_DIR</directory>
-                <directory suffix=".php">PHP_LIBDIR</directory>
-                <directory suffix=".php">vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnError="false" stopOnFailure="false" stopOnIncomplete="false" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">PEAR_INSTALL_DIR</directory>
+      <directory suffix=".php">PHP_LIBDIR</directory>
+      <directory suffix=".php">vendor</directory>
+    </exclude>
+  </coverage>
+  <testsuites>
+    <testsuite name="Delimiters">
+      <directory suffix=".php">tests/Delimiters</directory>
+    </testsuite>
+    <testsuite name="Diff">
+      <directory suffix=".php">tests/Diff</directory>
+    </testsuite>
+    <testsuite name="Granularity">
+      <directory suffix=".php">tests/Granularity</directory>
+    </testsuite>
+    <testsuite name="Parser">
+      <directory suffix=".php">tests/Parser</directory>
+    </testsuite>
+    <testsuite name="Render">
+      <directory suffix=".php">tests/Render</directory>
+    </testsuite>
+    <testsuite name="Usage">
+      <directory suffix=".php">tests/Usage</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

@@ -341,7 +341,7 @@ class Parser implements ParserInterface
                     $toCopyStartMax = $toSegmentEnd - $copyLen;
 
                     while ($toCopyStart <= $toCopyStartMax) {
-                        $fromCopyStart = strpos(mb_substr($fromText, $fromSegmentStart, $fromSegmentLen), substr($toText, $toCopyStart, $copyLen));
+                        $fromCopyStart = mb_strpos(mb_substr($fromText, $fromSegmentStart, $fromSegmentLen), substr($toText, $toCopyStart, $copyLen));
 
                         if ($fromCopyStart !== false) {
                             $fromCopyStart += $fromSegmentStart;
@@ -361,7 +361,7 @@ class Parser implements ParserInterface
                     $fromCopyStartMax = $fromSegmentEnd - $copyLen;
 
                     while ($fromCopyStart <= $fromCopyStartMax) {
-                        $toCopyStart = strpos(mb_substr($toText, $toSegmentStart, $toSegmentLen), substr($fromText, $fromCopyStart, $copyLen));
+                        $toCopyStart = mb_strpos(mb_substr($toText, $toSegmentStart, $toSegmentLen), substr($fromText, $fromCopyStart, $copyLen));
 
                         if ($toCopyStart !== false) {
                             $toCopyStart += $toSegmentStart;

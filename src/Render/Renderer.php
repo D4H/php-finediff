@@ -28,7 +28,7 @@ abstract class Renderer implements RendererInterface
         $operationCodesOffset = 0;
 
         while ($operationCodesOffset < $operationCodesLen) {
-            $opcode = $operationCodes[$operationCodesOffset];
+            $opcode = mb_substr($operationCodes, $operationCodesOffset, 1);
             $operationCodesOffset++;
             $n = (int) mb_substr($operationCodes, $operationCodesOffset);
 

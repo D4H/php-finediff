@@ -49,4 +49,11 @@ class ProcessTest extends TestCase
 
         $this->assertEquals($html, 'Hello2 world');
     }
+
+    public function testProcessMultibyteString()
+    {
+        $html = $this->text->process('Hello worlds', 'c6i2:🐘 c6d');
+
+        $this->assertEquals('Hello 🐘 worlds', $html);
+    }
 }

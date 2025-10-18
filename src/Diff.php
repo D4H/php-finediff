@@ -24,9 +24,9 @@ class Diff
     private $parser;
 
     /**
-     * @param GranularityInterface $granularity
-     * @param RendererInterface $renderer
-     * @param ParserInterface $parser
+     * @param GranularityInterface|null $granularity
+     * @param RendererInterface|null $renderer
+     * @param ParserInterface|null $parser
      */
     public function __construct(
         ?GranularityInterface $granularity = null,

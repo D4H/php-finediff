@@ -24,14 +24,14 @@ class Diff
     private $parser;
 
     /**
-     * @param GranularityInterface $granularity
-     * @param RendererInterface $renderer
-     * @param ParserInterface $parser
+     * @param GranularityInterface|null $granularity
+     * @param RendererInterface|null $renderer
+     * @param ParserInterface|null $parser
      */
     public function __construct(
-        GranularityInterface $granularity = null,
-        RendererInterface $renderer = null,
-        ParserInterface $parser = null
+        ?GranularityInterface $granularity = null,
+        ?RendererInterface $renderer = null,
+        ?ParserInterface $parser = null
     ) {
         // Set some sensible defaults
         // Set the granularity of the diff

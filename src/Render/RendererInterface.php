@@ -2,6 +2,8 @@
 
 namespace FineDiff\Render;
 
+use FineDiff\Parser\OperationCodesInterface;
+
 interface RendererInterface
 {
     /**
